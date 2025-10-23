@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>សារបញ្ជូន</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Battambang', 'Noto Sans Khmer', sans-serif;
+    }
+    ::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: #555;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="bg-[#111] text-gray-200">
+
+  <!-- Top Navbar -->
+  <div class="flex items-center space-x-4 bg-[#1a1a1a] px-6 py-3 border-b border-gray-800">
+    <a href="index.html" class="flex items-center space-x-2 text-gray-400 hover:text-white">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      <span>ទំព័រដើម</span>
+    </a>
+    <button class="text-red-500 font-semibold border-b-2 border-red-500">ប្រវត្តិការបញ្ចូល</button>
+    <button onclick="alert('បញ្ជីត្រូវបានបង្ហាញ!')" class="hover:text-white">បញ្ជី</button>
+    <button onclick="alert('ការប្រើប្រាស់កំពុងអភិវឌ្ឍន៍!')" class="hover:text-white">ការប្រើប្រាស់</button>
+    <button onclick="alert('ការកំណត់កំពុងអភិវឌ្ឍន៍!')" class="hover:text-white">ការកំណត់</button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="p-6">
+    <h1 class="text-2xl font-bold mb-4">សារបញ្ជូនតាមប្រព័ន្ធស្វ័យប្រវត្តិ</h1>
+
+    <div class="bg-[#1c1c1c] p-6 rounded-xl border border-gray-800">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+        <div class="flex items-center space-x-2">
+          <input id="searchInput" type="text" placeholder="ស្វែងរក" class="bg-[#2a2a2a] text-gray-200 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-red-500">
+          <button onclick="filterTable()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md font-semibold">ស្វែងរក</button>
+        </div>
+        <button onclick="openModal()" class="bg-red-700 hover:bg-red-800 px-4 py-2 rounded-lg font-semibold text-white">✅ បន្ថែម</button>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 rounded-lg">
+        <table class="min-w-full border border-gray-800 text-sm text-left">
+          <thead class="bg-gradient-to-r from-[#2a2a2a] to-[#333] text-gray-300">
+            <tr>
+              <th class="px-4 py-3"><input type="checkbox" class="accent-red-500"></th>
+              <th class="px-4 py-3">ឈ្មោះ</th>
+              <th class="px-4 py-3">អាសយដ្ឋាន</th>
+              <th class="px-4 py-3">សកម្មភាព</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable" class="divide-y divide-gray-800"></tbody>
+        </table>
+      </div>
+
+      <p id="countText" class="text-gray-500 text-sm mt-3">សរុប ៤ ឯកសារ</p>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="addModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-[#1f1f1f] rounded-xl shadow-xl p-6 w-full max-w-md border border-gray-700">
+      <h2 class="text-xl font-bold mb-4 text-center text-white">➕ បន្ថែមព័ត៌មានថ្មី</h2>
+
+      <form id="addForm" class="space-y-4">
+        <div>
+          <label class="block text-sm text-gray-400 mb-1">ឈ្មោះ</label>
+          <input id="nameInput" type="text" required class="w-full px-3 py-2 rounded-md bg-[#2a2a2a] border border-gray-700 text-gray-200 focus:ring-1 focus:ring-red-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm text-gray-400 mb-1">អាសយដ្ឋាន</label>
+          <input id="addressInput" type="text" required class="w-full px-3 py-2 rounded-md bg-[#2a2a2a] border border-gray-700 text-gray-200 focus:ring-1 focus:ring-red-500 focus:outline-none">
+        </div>
+
+        <div class="flex justify-end space-x-3 pt-3">
+          <button type="button" onclick="closeModal()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-md">បោះបង់</button>
+          <button type="submit" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md font-semibold text-white">រក្សាទុក</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let guests = [
+      { name: "គិម សាក់សិត", address: "ភ្នំពេញ" },
+      { name: "ស្រីពៅ", address: "កំពង់ចាម" },
+      { name: "សុជាតិ ឡេង", address: "សៀមរាប" },
+      { name: "ស្រីមុំ វ៉ាន់", address: "តាកែវ" }
+    ];
+
+    const tableBody = document.getElementById("dataTable");
+
+    // Render table rows
+    function renderTable(data = guests) {
+      tableBody.innerHTML = "";
+      data.forEach((guest, index) => {
+        const encodedName = encodeURIComponent(guest.name);
+        const row = document.createElement("tr");
+        row.className = "hover:bg-[#222] transition";
+
+        row.innerHTML = `
+          <td class="px-4 py-3"><input type="checkbox" class="accent-red-500"></td>
+          <td class="px-4 py-3 text-red-400 hover:text-red-500 underline cursor-pointer">
+  <a href="index.html?name=${encodedName}" class="block w-full" target="_blank">${guest.name}</a>
+</td>
+          <td class="px-4 py-3">${guest.address}</td>
+          <td class="px-4 py-3 flex space-x-2">
+            <button onclick="editRow(${index})" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm">កែប្រែ</button>
+            <button onclick="deleteRow(${index})" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">លុប</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      document.getElementById("countText").textContent = `សរុប ${data.length} ឯកសារ`;
+    }
+
+    renderTable();
+
+    // Search filter
+    function filterTable() {
+      const search = document.getElementById("searchInput").value.trim().toLowerCase();
+      const filtered = guests.filter(
+        g => g.name.toLowerCase().includes(search) || g.address.toLowerCase().includes(search)
+      );
+      renderTable(filtered);
+    }
+
+    // Add new guest
+    document.getElementById("addForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const name = document.getElementById("nameInput").value.trim();
+      const address = document.getElementById("addressInput").value.trim();
+      if (name && address) {
+        guests.push({ name, address });
+        renderTable();
+        closeModal();
+        e.target.reset();
+      }
+    });
+
+    // Edit row
+    function editRow(index) {
+      const newName = prompt("បញ្ចូលឈ្មោះថ្មី:", guests[index].name);
+      if (newName !== null && newName.trim() !== "") {
+        const newAddress = prompt("បញ្ចូលអាសយដ្ឋានថ្មី:", guests[index].address);
+        if (newAddress !== null && newAddress.trim() !== "") {
+          guests[index].name = newName.trim();
+          guests[index].address = newAddress.trim();
+          renderTable();
+        }
+      }
+    }
+
+    // Delete row
+    function deleteRow(index) {
+      if (confirm("តើអ្នកប្រាកដថាចង់លុបឯកសារនេះមែនទេ?")) {
+        guests.splice(index, 1);
+        renderTable();
+      }
+    }
+
+    // Modal controls
+    function openModal() {
+      document.getElementById("addModal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+      document.getElementById("addModal").classList.add("hidden");
+    }
+  </script>
+
+</body>
+</html>
